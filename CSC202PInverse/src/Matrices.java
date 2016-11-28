@@ -19,83 +19,46 @@ public class Matrices {
 	private static int[][] temp = new int[3][3];		 //Temp matrix used to calculate transpose matrix
 	private static int[][] coFactor = new int[3][3]; 	//cofactor matrix
 	private static int det;                            //determinant
-	private static int[][] inverse = {{1,2,3},{0,4,5},{1,0,-6}};  //Testing matrix to get a non zero determinant
+	private static int[][] testMatrix = {{1,2,0},{3,0,1},{-2,5,10}};  //Testing matrix to get a non zero determinant
+	private static double[][] inverse = new double[3][3];
+	private static double[][] transpose = new double [3][3];
 	
+	private static BufferedReader br;
+	private static FileReader fr;
 	private static String fileMatrixA = "matrix";
 	private static String fileMatrixB = "matrixB";
-	
-	public static void main(String[] args) throws IOException{
-		//read and display from file to get matrix a
-		readFileMatrixA(fileMatrixA);
-		displayMatrixA(a);
-		//read and display from file to get matrix b
-		System.out.println("");
-		readFileMatrixB(fileMatrixB);
-		displayMatrixA(b);
-		//call sum method to calculate sum of a and b to store to c
-		System.out.println("");
-		matrixSum(a,b,c);
-		displayMatrixA(c);
-		//call multiply method and store to e
-		System.out.println("");
-		multiplyMatrix(a,b,e);
-		displayMatrixA(e);
-		// call to transpose method using metrix c
-		System.out.println("");
-		transposeMatrix(c, temp);
-		displayMatrixA(temp);
-		// call to transpose method using matrix e
-		System.out.println("");
-		transposeMatrix(e, temp);
-		displayMatrixA(temp);
-		
-		//call to determinant method
-		System.out.println("");
-		determinant(inverse,coFactor); // able to calculate determinant however unable to print or store it outside of method...
-		System.out.println(det); //det prints out 0 when infact it is not true
-		//call to cofactor method
-		System.out.println("");
-		coFactor(a,coFactor, det); //calculates cofactor but doesn't take into account negative signs right...
-		displayMatrixA(coFactor);
-		
-		
+
+	public Matrices(int[][]a) throws IOException {
+		this.a = a;
 	}
 	
-	public static void readFileMatrixA(String fileMatrixA) throws IOException {
+	public Matrices(int[][]a, int[][]b) throws IOException {
+		this.a = a;
+		this.b = b;
+	}
+	public static void readFileMatrix(String inLine, int[][]a) throws IOException {
 		int i = 0;
-		String inLine;
-		BufferedReader br = new BufferedReader(new FileReader(fileMatrixA));
-	
+		BufferedReader br = new BufferedReader(new FileReader(inLine));
+		
 		while((inLine = br.readLine()) !=null) {
-			String[] array = inLine.split(" ");  //splits each element using delimiter of a space
-			
-			for (int j = 0; j <3; j++) {
-				int n = Integer.parseInt(array[j]);
-				a[i][j] = n;
-				
-			}
-			i++;
-		}
-	}
-	//Method is redundant but works for now. 
-	public static void readFileMatrixB(String filematrixB) throws IOException {
-		int i = 0;
-		String inLine;
-		BufferedReader br1 = new BufferedReader(new FileReader(fileMatrixB));
-	
-		while((inLine = br1.readLine()) !=null) {
-			String[] array = inLine.split(" ");
-			
-			for (int j = 0; j <3; j++) {
-				int n = Integer.parseInt(array[j]);
-				b[i][j] = n;
-				
+			String[] array = inLine.split(" ");  //splits each element using delimiter of a space	
+				for (int j = 0; j <3; j++) {
+					int n = Integer.parseInt(array[j]);
+						a[i][j] = n;
 			}
 			i++;
 		}
 	}
 	//Method that reads the 2d matrix and displays
-	public static void displayMatrixA(int a[][]) {
+	public static void displayMatrix(int a[][]) {
+		for(int i = 0; i < a.length; i++) {
+			for(int j = 0; j < a[i].length; j++) {
+				System.out.print(a[i][j] + "\t");
+			}
+			System.out.println();
+		}
+	}
+	public static void displayMatrix(double a[][]) {
 		for(int i = 0; i < a.length; i++) {
 			for(int j = 0; j < a[i].length; j++) {
 				System.out.print(a[i][j] + "\t");
@@ -105,7 +68,7 @@ public class Matrices {
 	}
 
 	//Method to calculate the sum of 2 3x3 matrices
-	public static int[][] matrixSum(int [][]a, int[][]b, int [][]c) {
+	public static void matrixSum(int[][] a, int[][] b, int[][] c) {
 		 for(int i=0; i<3; i++)
 	       {
 	           for(int j=0; j<3; j++)
@@ -113,16 +76,15 @@ public class Matrices {
 	               c[i][j] = a[i][j] + b[i][j];
 	           }
 	       }
-		 return c;
 	}
 	//method to multiply 2 3x3 matrices and stores to matrix e
-	public static int[][] multiplyMatrix(int[][] a, int[][] b, int[][] e) {
-		int m=3, p=3, q=3, sum = 0, c, d, k;
-		for( c=0; c<m; c++)
+	public static void multiplyMatrix(int[][] a, int[][] b, int[][] e) {
+		int sum = 0, c, d, k;
+		for( c=0; c<3; c++)
          {
-            for( d=0; d<q; d++)
+            for( d=0; d<3; d++)
             {   
-               for( k=0; k<p; k++)
+               for( k=0; k<3; k++)
                {
                    sum = sum + a[c][k] * b[k][d];
                }
@@ -131,49 +93,80 @@ public class Matrices {
                sum = 0;
             }
          }
-		return e;
 	}
 	//Method that transposes a 3x3 matrix
-	public static int[][] transposeMatrix(int[][] c, int[][] temp) {
+	public static void transposeMatrix(int[][] a, int[][] temp) {
 		  
 	        for (int i = 0; i < 3; i++){
 	            for (int j = 0; j < 3; j++){
-	                temp[j][i] = c[i][j];
+	                temp[j][i] = a[i][j];
 	            }
 	        }
-	        return temp;   
 	}
 	//Method that calculates the cofactor matrix
-	public static int[][] coFactor(int[][] a, int[][]cofactor, int det) {
+	public static void coFactor(int[][] a, int[][]cofactor) {
 		int row = 0, col=0;
 		for (row = 0; row < 3; row++) {
 			for (col = 0; col < 3; col++) {
 	            	cofactor[row][col] = a[(row + 1) % 3][(col + 1) % 3] * a[(row + 2) % 3][(col + 2) % 3] 
 	            			- a[(row + 1) % 3][(col + 2) % 3] * a[(row + 2) % 3][(col + 1) % 3];
-	            	
-					if (row == 0)
-	        			det += a[0][col] * cofactor[row][col];
-	            	
 	            }
 	        }
-		System.out.println(det);
-		return cofactor;
 	}
-	//not working
-	public static void determinant(int[][] a, int[][]cofactor) {
-		int row = 0, col=0;
-		int det = 0;
-		for (row = 0; row < 3; row++) {
-			for (col = 0; col < 3; col++) {
-	            	cofactor[row][col] = a[(row + 1) % 3][(col + 1) % 3] * a[(row + 2) % 3][(col + 2) % 3] 
-	            			- a[(row + 1) % 3][(col + 2) % 3] * a[(row + 2) % 3][(col + 1) % 3];
-	            	
-	            	if (row == 0)
-	        			det += a[0][col] * cofactor[row][col];
-	            
-	         }
+	public static void determinant(int[][] a) {
+		det = a[0][0]*(a[1][1]*a[2][2] - a[2][1]*a[1][2])
+			- a[0][1]*(a[1][0]*a[2][2] - a[1][2]*a[2][0])
+			+ a[0][2]*(a[1][0]*a[2][1] - a[1][1]*a[2][0]);
+	}
+	public static void inverseMatrix(double[][] inverse, int det, int[][]temp, double[][]transpose) {
+	
+		for(int i = 0; i < 3; i++) {
+			for(int j = 0; j < 3; j++){
+				inverse[i][j] = (double)((1/det)* (double)(temp[i][j]));
+			}
 		}
+		
 	}
 	
+	public static void main(String[] args) throws IOException{
+		
+		Matrices matricesA = new Matrices(a);
+		Matrices matricesB = new Matrices(a, b);
+	
+		
+		System.out.println("MatrixA");
+		matricesA.readFileMatrix(fileMatrixA, a);
+		matricesA.displayMatrix(a);
+		
+		System.out.println("MatrixB");
+		matricesB.readFileMatrix(fileMatrixB, b);
+		matricesB.displayMatrix(b);
+		
+		System.out.println("Sum of MatrixA and MatrixB" + "\n");
+		matricesA.matrixSum(a, b, c);
+		matricesA.displayMatrix(c);
+		
+		System.out.println("Product of Matrix A and Matrix B" + "\n");
+		multiplyMatrix(a, b, e);
+		displayMatrix(e);
+		
+		System.out.println("Determinant of the Sum of Matrix A and B");
+		determinant(c);
+		System.out.println(det);
+		
+		System.out.println("The Cofactor matrix of the Sum Matrix");
+		coFactor(c, coFactor);
+		displayMatrix(coFactor);
+		
+		System.out.println("The tranpose matrix of the Sum Matrix");
+		transposeMatrix(coFactor, temp);
+		displayMatrix(temp);
+		
+		System.out.println("The inverse Matrix");
+		inverseMatrix(inverse, det, temp, transpose);
+		displayMatrix(inverse);
+
+		
+	}
 
 }
