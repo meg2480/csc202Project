@@ -19,36 +19,43 @@ public class Matrices {
 	private static int[][] temp = new int[3][3];		 //Temp matrix used to calculate transpose matrix
 	private static int[][] coFactor = new int[3][3]; 	//cofactor matrix
 	private static int det;                            //determinant
-
-	private static double[][] inverse = new double[3][3];
-	private static double[][] transpose = new double [3][3];
-	private static int[][] diagonalA = new int[1][3];
-	private static int[][] diagonalB = new int[1][3];
+	private static int sod;
+	
+	private static double[][] inverse = new double[3][3];   //Matrix for inverse
+	private static double[][] transpose = new double [3][3];//Matrix for the transpose
+	private static int[][] inverseProduct = {{1}, {4}, {7}}; //First column of second Matrix
+	
 	
 	private static PrintWriter pw;
 	private static BufferedReader br;
-	private static String fileMatrixA = "matrix";
-	private static String fileMatrixB = "matrixB";
-	private static String fileMatrixSum = "matrixSum";
-	private static String fileMatrixProduct = "matrixProduct";
-	private static String fileMatrixCoFactor = "matrixCo";
-	private static String fileMatrixTranspose = "matrixTranspose";
-	private static String fileMatrixInverse = "matrixInverse";
 
+	private static String fileMatrixA = "matrix";           //first matrix
+	private static String fileMatrixB = "matrixB";			//second matrix
+	private static String fileMatrixSum = "matrixSum";      //sum of matrix A and B
+	private static String fileMatrixProduct = "matrixProduct";  //product of matrix A and B
+	private static String fileMatrixCoFactorOfSumMatrix = "matrixCoFactorOfSumMatrix"; //Cofactor of sum of matrix A and B
+	private static String fileMatrixTransposeOfSumMatrix = "matrixTransposeOfSumMatrix"; //Transpose of the cofactorSum matrix
+	private static String fileMatrixCoFactor = "matrixCo";              //Cofactor of first matrix
+	private static String fileMatrixTranspose = "matrixTranspose";      //transpose of first matrix cofactor
+	private static String fileMatrixInverse = "matrixInverse";           //Inverse of first matrix
+	private static String fileInverseMatrixProduct = "inverseMatrixProduct"; //the product of first matrix to first column of matrix b
+	private static String fileSOD = "StandardOfDeviation";            //SoD of matrix A and B
+	//Constructor
 	public Matrices(int[][]a) {
 		this.a = a;
 	}
-	
+	//Overloaded Constructor
 	public Matrices(int[][]a, int[][]b)  {
 		this.a = a;
 		this.b = b;
 	}
+	//Read method to read from file into an int matrix
 	public static void readFile(String inLine, int[][]a) throws IOException {
 		int i = 0;
 		br = new BufferedReader(new FileReader(inLine));
 		while((inLine = br.readLine()) !=null) {
 			String[] array = inLine.split(" ");  //splits each element using delimiter of a space	
-				for (int j = 0; j <3; j++) {
+				for (int j = 0; j < 3; j++) {
 					int n = Integer.parseInt(array[j]);
 						a[i][j] = n;
 			}
@@ -56,6 +63,7 @@ public class Matrices {
 		}
 		br.close();
 	}
+	//overloaded method to read into a double matrix
 	public static void readFile(String inLine, double[][]a) throws IOException {
 		int i = 0;
 		br = new BufferedReader(new FileReader(inLine));
@@ -69,6 +77,7 @@ public class Matrices {
 		}
 		br.close();
 	}
+	//Write method to write matrix to file with formatting
 	public static void writeFile(String file, int[][]a) throws IOException {
 		pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 		for(int i = 0; i < a.length; i++) {
@@ -83,6 +92,7 @@ public class Matrices {
 		}
 		pw.close();
 	}
+	//Write overloaded method to write matrix to file with formatting
 	public static void writeFile(String file, double[][]a) throws IOException {
 		pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 		for(int i = 0; i < a.length; i++) {
@@ -97,7 +107,13 @@ public class Matrices {
 		}
 		pw.close();
 	}
-	//Method that reads the 2d matrix and displays
+	//overloaded method to write an int to file
+	public static void writeFile(String file, int a) throws IOException {
+		pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+					pw.print(a);
+					pw.close();
+	}
+	//Method that reads the 2d matrix and prints to console
 	public static void displayMatrix(int a[][]) {
 		for(int i = 0; i < a.length; i++) {
 			for(int j = 0; j < a[i].length; j++) {
@@ -106,6 +122,7 @@ public class Matrices {
 			System.out.println();
 		}
 	}
+	//overloaded method to read a double 2d matrix and prints to console
 	public static void displayMatrix(double a[][]) {
 		for(int i = 0; i < a.length; i++) {
 			for(int j = 0; j < a[i].length; j++) {
@@ -142,7 +159,7 @@ public class Matrices {
             }
          }
 	}
-	//Method that transposes a 3x3 matrix
+	//Method that transposes a 3x3 matrix to temp
 	public static void transposeMatrix(int[][] a, int[][] temp) {
 	        for (int i = 0; i < 3; i++){
 	            for (int j = 0; j < 3; j++){
@@ -160,11 +177,14 @@ public class Matrices {
 	            }
 	        }
 	}
+	//Method that calculates the determinant
 	public static void determinant(int[][] a) {
 		det = a[0][0]*(a[1][1]*a[2][2] - a[2][1]*a[1][2])
 			- a[0][1]*(a[1][0]*a[2][2] - a[1][2]*a[2][0])
 			+ a[0][2]*(a[1][0]*a[2][1] - a[1][1]*a[2][0]);
 	}
+	
+	//method that calculates the inverse matrix
 	public static void inverseMatrix(double[][] inverse, int det, double[][]transpose) {
 	
 		for(int i = 0; i < 3; i++) {
@@ -173,62 +193,111 @@ public class Matrices {
 			}
 		}
 	}
+	//method that calculates the Standard of deviation
 	public static void CalculateDiagonal(int[][]a, int[][]b) {
-		for(int i = 0; i < a.length; i++) {
-			for(int j = 0; j < a.length; j++) {
-				if(i == j) {
-					a[i][j] = b[i][j];
-				}
-			}
-		}
+		sod = ((a[0][0] + a[1][1] + a [2][2] + b[0][0] + b[1][1] + b[2][2])/6);
 	}
-	
-	public static void main(String[] args) throws IOException{
-		
-		Matrices matricesA = new Matrices(a);
-		Matrices matricesB = new Matrices(a, b);
+	//method that saves the first column of b to another matrix
+	public static void setFirstColumn(int[][]a, int[][]b) {
 
+				inverseProduct[0][0] = b[0][0];
+				inverseProduct[1][0] = b[1][0];
+				inverseProduct[2][0] = b[2][0];
+	}
+	//method that calculates the product of 3x3 matrix and 3x1 matrix
+	public static void InverseProduct(int[][]a, int[][]b, int[][]e) {
+		int sum = 0;
+		for (int c = 0; c < b[0].length; c++) {
+	        for (int k = 0; k < a.length; k++) {
+	            sum = 0;
+	            for (int f = 0; f < b.length; f++) {
+	                sum = sum + a[k][f] * b[f][c];
+               }
+               e[k][c] = sum;
+            }
+         }
+	}
+	//main
+	public static void main(String[] args) throws IOException{
+		//create objects
+		Matrices matricesA = new Matrices(a);
+		Matrices findInverseOfFirstMatrix = new Matrices(a, b);
+		//reads from 2 files matrix.txt and matrixB.txt and displays
 		System.out.println("MatrixA");
 		matricesA.readFile(fileMatrixA, a);
 		matricesA.displayMatrix(a);
 		
 		System.out.println("MatrixB");
-		matricesB.readFile(fileMatrixB, b);
-		matricesB.displayMatrix(b);
+		matricesA.readFile(fileMatrixB, b);
+		matricesA.displayMatrix(b);
 		
+		//Calls to sum method, display, and write
 		System.out.println("Sum of MatrixA and MatrixB" + "\n");
 		matricesA.matrixSum(a, b, c);
 		matricesA.displayMatrix(c);
 		matricesA.writeFile(fileMatrixSum, c);
 		
+		//calls to product method, displays, and writes
 		System.out.println("Product of Matrix A and Matrix B" + "\n");
-		matrixProduct(a, b, e);
-		displayMatrix(e);
-		writeFile(fileMatrixProduct, e);
+		matricesA.matrixProduct(a, b, e);
+		matricesA.displayMatrix(e);
+		matricesA.writeFile(fileMatrixProduct, e);
 		
+		//calls to determinant method and prints
 		System.out.println("Determinant of the Sum of Matrix A and B");
-		determinant(c);
+		matricesA.determinant(c);
 		System.out.println(det);
 		
+		//calls to cofactor method, displays, and writes
 		System.out.println("The Cofactor matrix of the Sum Matrix");
-		coFactor(c, coFactor);
-		displayMatrix(coFactor);
-		writeFile(fileMatrixCoFactor, coFactor);
+		matricesA.coFactor(c, coFactor);
+		matricesA.displayMatrix(coFactor);
+		matricesA.writeFile(fileMatrixCoFactorOfSumMatrix, coFactor);
 		
+		//calls to tranpose matrix, writes to file, then prints
 		System.out.println("The tranpose matrix of the Sum Matrix");
-		transposeMatrix(coFactor, temp);
-		displayMatrix(temp);
-		writeFile(fileMatrixTranspose, temp);
-		readFile(fileMatrixTranspose, transpose); 
-		displayMatrix(transpose);
+		matricesA.transposeMatrix(coFactor, temp);
+		matricesA.writeFile(fileMatrixTransposeOfSumMatrix, temp);
+		matricesA.displayMatrix(temp);
 		
+		//Find the inverse of the first Matrix
+		//calls to determinant method to calculate the first matrix's determinant
+		System.out.println("Determinant of the Sum of Matrix A and B");
+		findInverseOfFirstMatrix.determinant(a);
+		System.out.println(det);
+		
+		//calls to cofactor matrix, displays, and writes
+		System.out.println("The Cofactor matrix of the Sum Matrix");
+		findInverseOfFirstMatrix.coFactor(c, coFactor);
+		findInverseOfFirstMatrix.displayMatrix(coFactor);
+		findInverseOfFirstMatrix.writeFile(fileMatrixCoFactor, coFactor);
+		
+		//calls to tranpose matrix, writes to file as int, then reads back into double, then prints
+		//Reason for this is to convert the int[][] to an double[][] to calculate the inverse
+		//Although casting to double within the formula in the inverseMatrix method works as well
+		System.out.println("The tranpose matrix of the Sum Matrix");
+		findInverseOfFirstMatrix.transposeMatrix(coFactor, temp);
+		findInverseOfFirstMatrix.displayMatrix(temp);
+		findInverseOfFirstMatrix.writeFile(fileMatrixTranspose, temp);
+		findInverseOfFirstMatrix.readFile(fileMatrixTranspose, transpose); 
+		findInverseOfFirstMatrix.displayMatrix(transpose);
+		
+		//Calls to the inverseMatrix method, displays the inverse, and prints
 		System.out.println("The inverse Matrix of the Sum Matrix");
-		inverseMatrix(inverse, det, transpose);
-		displayMatrix(inverse);
-		writeFile(fileMatrixInverse, inverse);
+		findInverseOfFirstMatrix.inverseMatrix(inverse, det, transpose);
+		findInverseOfFirstMatrix.displayMatrix(inverse);
+		findInverseOfFirstMatrix.writeFile(fileMatrixInverse, inverse);
 		
+		//Calls to the method that calculates the standard of deviation, prints it, and writes to file
+		System.out.println("The standard of Deviation");
+		findInverseOfFirstMatrix.CalculateDiagonal(a, b);
+		System.out.println(sod);
+		findInverseOfFirstMatrix.writeFile(fileSOD, sod);
 		
-
+		//calls to the method that calculates the product of first matrix and the first column of matrix B
+		findInverseOfFirstMatrix.InverseProduct(b, inverseProduct ,e);
+		findInverseOfFirstMatrix.displayMatrix(e);
+		findInverseOfFirstMatrix.writeFile(fileInverseMatrixProduct, e);
 	} 
 
 }
